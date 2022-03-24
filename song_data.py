@@ -73,22 +73,23 @@ class StreamingHistory():
         
     def load_streaming_history(self):
         
-        data = {}
+        self.streaming_data = {}
         
         for elem in self.hist:
             song_name = elem["trackName"]
-            time_played = elem["msPlayed"] / 3600000
+            time_played = elem["msPlayed"] / 3600000 # convert ms to hours
             
-            if song_name in data.keys():
-                data[song_name] += time_played
+            if song_name in self.streaming_data.keys():
+                self.streaming_data[song_name] += time_played
             else:
-                data[song_name] = time_played
+                self.streaming_data[song_name] = time_played
         
-        sorted_songs = sorted(data.items(), key=lambda x: x[1], reverse=True)
-        print(len(data.keys()))
+    def print_streaming_history(self):
+        sorted_songs = sorted(self.streaming_data.items(), key=lambda x: x[1], reverse=True)
+        print(len(self.streaming_data.keys()))
         
         for i, item in enumerate(sorted_songs):
             print(f"{i}\t {item[0]} \t\t {item[1]:.2f} [hours]")
         
             if i > 50:
-                return data
+                break

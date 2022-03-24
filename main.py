@@ -12,12 +12,13 @@ args = parser.parse_args()
 
 if __name__=="__main__":
     
-    # TODO: switch data type based on arg
     json_type = args.jdt
     
     if json_type == 'StreamingHistory':
         dat = StreamingHistory(args.path[0])
         dat.load_streaming_history()
+        dat.print_streaming_history()
+        
     elif json_type == 'Library':
         dat = Library(args.path[0])
         dat.load_song_data_all_playlists()
