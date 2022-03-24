@@ -1,3 +1,7 @@
-data
+# Project Specific
+data/
+
+# Generic
 .vs
 *.zip
+__pycache__/
