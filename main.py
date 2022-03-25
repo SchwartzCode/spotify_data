@@ -21,7 +21,7 @@ if __name__=="__main__":
         
     elif json_type == 'Library':
         dat = Library(args.path[0])
-        dat.load_song_data_all_playlists()
+        dat.tally_artist_and_song_appearances()
         dat.print_playlist_data()
 
     
