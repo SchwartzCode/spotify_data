@@ -1,12 +1,12 @@
 import argparse
-from song_data import Library, StreamingHistory
+from song_data import BigDataStreamingHistory, Library, StreamingHistory
 
 parser = argparse.ArgumentParser(description='Look at music')
 parser.add_argument('path', metavar='<path>', type=str, nargs='+',
                     help='path to the playlist json file')
 parser.add_argument('-jdt', metavar='--json_data_type', type=str,
-                    default="StreamingHistory",
-                    help='type of JSON file being read in. Options: ["StreamingHistory", "Library"]')
+                    default="BigDataStreamingHistory",
+                    help='type of JSON file being read in. Options: ["StreamingHistory", "Library", "BigDataStreamingHistory]')
 
 args = parser.parse_args()
 
@@ -18,6 +18,9 @@ if __name__=="__main__":
         dat = StreamingHistory(args.path[0])
         dat.load_streaming_history()
         dat.print_streaming_history()
+    
+    elif json_type == 'BigDataStreamingHistory':
+        dat = BigDataStreamingHistory(args.path[0])
         
     elif json_type == 'Library':
         dat = Library(args.path[0])

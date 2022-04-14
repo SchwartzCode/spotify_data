@@ -1,4 +1,5 @@
 import json
+import os
 from tabulate import tabulate
 
 class Printer():
@@ -116,3 +117,23 @@ class StreamingHistory(Printer):
         print_col_headers = ['Rank', 'Song Name', 'Plays', 'Hours Listened']
         
         self.print_sorted_dict_data(sorted_songs, print_col_headers)
+
+
+class BigDataStreamingHistory(Printer):
+    def __init__(self, folder_path: str, max_print_amount:int=50):
+        super().__init__(max_print_amount=max_print_amount)
+        print(f'Loading data from folder: {folder_path}')
+
+        self.load_data(folder_path)
+        
+    def load_data(self, folder_path):
+        
+        for file in os.listdir(folder_path):
+            if file.startswith("endsong"):
+                file_path = os.path.join(folder_path, file)
+                self.add_file_data_to_dict(file_path)
+    
+    def add_file_data_to_dict(self, file_path):
+        print(f"Saving data from: {file_path}")
+        f = open(file_path)
+        json.load(f)
