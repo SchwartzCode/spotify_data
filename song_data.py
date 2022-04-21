@@ -35,7 +35,7 @@ class Printer():
         sorted_songs = sorted(streaming_history_dict.items(), key=lambda x: x[1]['time_played'], reverse=True)
         print(f"{len(streaming_history_dict.keys())} unique songs listen to. Top {self.max_print_amount}:")
         
-        print_col_headers = ['Rank', 'Song Name', 'Plays', 'Hours Listened', 'Average Play [mins]']
+        print_col_headers = ['Rank', 'Song Name', 'Hours Listened', 'Plays', 'Average Play [mins]']
         
         self.print_sorted_dict_data(sorted_songs, print_col_headers)
 
@@ -128,7 +128,7 @@ class StreamingHistory(Printer):
         self.print_streaming_history(self.streaming_data)
 
 class BigDataStreamingHistory(Printer):
-    def __init__(self, folder_path: str, max_print_amount:int=50):
+    def __init__(self, folder_path: str, max_print_amount:int=150):
         super().__init__(max_print_amount=max_print_amount)
         print(f'Loading data from folder: {folder_path}')
 
@@ -153,6 +153,10 @@ class BigDataStreamingHistory(Printer):
             song_name = elem["master_metadata_track_name"]
             time_played = elem["ms_played"] / self.ms_TO_hrs
             
+            if song_name is None:
+                # either a podcast or a song imported into spotify
+                continue
+
             if song_name in self.data_dict.keys():
                 self.data_dict[song_name]['time_played'] += time_played
                 self.data_dict[song_name]['plays'] += 1
@@ -163,7 +167,5 @@ class BigDataStreamingHistory(Printer):
                 self.data_dict[song_name] = {'time_played': time_played, 'plays': 1, 
                                              'average_play': self.HRS_to_MINS*time_played}
 
-            
-            
     def print_info(self):
         self.print_streaming_history(self.data_dict)
