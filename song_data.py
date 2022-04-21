@@ -7,6 +7,7 @@ class Printer():
         # maximum number of items printed when calling print_sorted_dict_data
         self.max_print_amount = max_print_amount
         self.ms_TO_hrs = 3600000
+        self.HRS_to_MINS = 60
         
     def print_sorted_dict_data(self, dict_in: dict, column_headers: list):
         # pretty print data in <dict_in> and label columns with <column_headers>
@@ -24,17 +25,17 @@ class Printer():
             if i >= self.max_print_amount-1:
                 break
             
-        print(tabulate(song_info_to_print, headers=column_headers))
+        print("\n\n", tabulate(song_info_to_print, headers=column_headers))
     
     def print_streaming_history(self, streaming_history_dict):
         '''
         print top <self.max_print_amount> songs in streaming history, sorted by number of plays
         '''
         
-        sorted_songs = sorted(streaming_history_dict.items(), key=lambda x: x[1]['plays'], reverse=True)
+        sorted_songs = sorted(streaming_history_dict.items(), key=lambda x: x[1]['time_played'], reverse=True)
         print(f"{len(streaming_history_dict.keys())} unique songs listen to. Top {self.max_print_amount}:")
         
-        print_col_headers = ['Rank', 'Song Name', 'Plays', 'Hours Listened']
+        print_col_headers = ['Rank', 'Song Name', 'Plays', 'Hours Listened', 'Average Play [mins]']
         
         self.print_sorted_dict_data(sorted_songs, print_col_headers)
 
@@ -115,21 +116,16 @@ class StreamingHistory(Printer):
             if song_name in self.streaming_data.keys():
                 self.streaming_data[song_name]['time_played'] += time_played
                 self.streaming_data[song_name]['plays'] += 1
-            else:
-                self.streaming_data[song_name] = {'time_played': time_played, 'plays': 1}
-        
-    def print_streaming_history(self):
-        '''
-        print top <self.max_print_amount> songs in streaming history, sorted by number of plays
-        '''
-        
-        sorted_songs = sorted(self.streaming_data.items(), key=lambda x: x[1]['plays'], reverse=True)
-        print(f"{len(self.streaming_data.keys())} unique songs listen to. Top {self.max_print_amount}:")
-        
-        print_col_headers = ['Rank', 'Song Name', 'Hours Listened', 'Plays']
-        
-        self.print_sorted_dict_data(sorted_songs, print_col_headers)
+                self.streaming_data[song_name]['average_play'] = self.HRS_to_MINS * \
+                                                                 self.streaming_data[song_name]['time_played'] / \
+                                                                 self.streaming_data[song_name]['plays']
 
+            else:
+                self.streaming_data[song_name] = {'time_played': time_played, 'plays': 1, 
+                                                  'average_play':self.HRS_to_MINS*time_played}
+
+    def print_info(self):
+        self.print_streaming_history(self.streaming_data)
 
 class BigDataStreamingHistory(Printer):
     def __init__(self, folder_path: str, max_print_amount:int=50):
@@ -160,8 +156,14 @@ class BigDataStreamingHistory(Printer):
             if song_name in self.data_dict.keys():
                 self.data_dict[song_name]['time_played'] += time_played
                 self.data_dict[song_name]['plays'] += 1
+                self.data_dict[song_name]['average_play'] = self.HRS_to_MINS * \
+                                                            self.data_dict[song_name]['time_played'] / \
+                                                            self.data_dict[song_name]['plays']
             else:
-                self.data_dict[song_name] = {'time_played': time_played, 'plays': 1}
+                self.data_dict[song_name] = {'time_played': time_played, 'plays': 1, 
+                                             'average_play': self.HRS_to_MINS*time_played}
 
+            
+            
     def print_info(self):
         self.print_streaming_history(self.data_dict)
