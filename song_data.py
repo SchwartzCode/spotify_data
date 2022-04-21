@@ -35,7 +35,7 @@ class Printer():
         sorted_songs = sorted(streaming_history_dict.items(), key=lambda x: x[1]['time_played'], reverse=True)
         print(f"{len(streaming_history_dict.keys())} unique songs listen to. Top {self.max_print_amount}:")
         
-        print_col_headers = ['Rank', 'Song Name', 'Hours Listened', 'Plays', 'Average Play [mins]']
+        print_col_headers = ['Rank', 'Song Name', 'Artist', 'Hours Listened', 'Plays', 'Average Play [mins]']
         
         self.print_sorted_dict_data(sorted_songs, print_col_headers)
 
@@ -110,8 +110,8 @@ class StreamingHistory(Printer):
         self.streaming_data = {}
         
         for elem in self.hist:
-            song_name = elem["trackName"]
-            time_played = elem["msPlayed"] / self.ms_TO_hrs
+            song_name = elem['trackName']
+            time_played = elem['msPlayed'] / self.ms_TO_hrs
             
             if song_name in self.streaming_data.keys():
                 self.streaming_data[song_name]['time_played'] += time_played
@@ -121,7 +121,9 @@ class StreamingHistory(Printer):
                                                                  self.streaming_data[song_name]['plays']
 
             else:
-                self.streaming_data[song_name] = {'time_played': time_played, 'plays': 1, 
+                self.streaming_data[song_name] = {'artist': elem['artistName'], 
+                                                  'time_played': time_played, 
+                                                  'plays': 1, 
                                                   'average_play':self.HRS_to_MINS*time_played}
 
     def print_info(self):
@@ -150,7 +152,7 @@ class BigDataStreamingHistory(Printer):
         input_file = json.load(f)
                 
         for elem in input_file:
-            song_name = elem["master_metadata_track_name"]
+            song_name = elem['master_metadata_track_name']
             time_played = elem["ms_played"] / self.ms_TO_hrs
             
             if song_name is None:
@@ -164,7 +166,9 @@ class BigDataStreamingHistory(Printer):
                                                             self.data_dict[song_name]['time_played'] / \
                                                             self.data_dict[song_name]['plays']
             else:
-                self.data_dict[song_name] = {'time_played': time_played, 'plays': 1, 
+                self.data_dict[song_name] = {'artist': elem['master_metadata_album_artist_name'],
+                                             'time_played': time_played,
+                                             'plays': 1, 
                                              'average_play': self.HRS_to_MINS*time_played}
 
     def print_info(self):
