@@ -21,6 +21,7 @@ if __name__=="__main__":
     
     elif json_type == 'BigDataStreamingHistory':
         dat = BigDataStreamingHistory(args.path[0])
+        dat.print_info()
         
     elif json_type == 'Library':
         dat = Library(args.path[0])

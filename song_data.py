@@ -25,6 +25,18 @@ class Printer():
                 break
             
         print(tabulate(song_info_to_print, headers=column_headers))
+    
+    def print_streaming_history(self, streaming_history_dict):
+        '''
+        print top <self.max_print_amount> songs in streaming history, sorted by number of plays
+        '''
+        
+        sorted_songs = sorted(streaming_history_dict.items(), key=lambda x: x[1]['plays'], reverse=True)
+        print(f"{len(streaming_history_dict.keys())} unique songs listen to. Top {self.max_print_amount}:")
+        
+        print_col_headers = ['Rank', 'Song Name', 'Plays', 'Hours Listened']
+        
+        self.print_sorted_dict_data(sorted_songs, print_col_headers)
 
 class Library(Printer):
     
@@ -114,7 +126,7 @@ class StreamingHistory(Printer):
         sorted_songs = sorted(self.streaming_data.items(), key=lambda x: x[1]['plays'], reverse=True)
         print(f"{len(self.streaming_data.keys())} unique songs listen to. Top {self.max_print_amount}:")
         
-        print_col_headers = ['Rank', 'Song Name', 'Plays', 'Hours Listened']
+        print_col_headers = ['Rank', 'Song Name', 'Hours Listened', 'Plays']
         
         self.print_sorted_dict_data(sorted_songs, print_col_headers)
 
@@ -124,16 +136,32 @@ class BigDataStreamingHistory(Printer):
         super().__init__(max_print_amount=max_print_amount)
         print(f'Loading data from folder: {folder_path}')
 
+        self.data_dict = {}
+
         self.load_data(folder_path)
         
     def load_data(self, folder_path):
-        
+
         for file in os.listdir(folder_path):
             if file.startswith("endsong"):
+
                 file_path = os.path.join(folder_path, file)
                 self.add_file_data_to_dict(file_path)
     
     def add_file_data_to_dict(self, file_path):
         print(f"Saving data from: {file_path}")
         f = open(file_path)
-        json.load(f)
+        input_file = json.load(f)
+                
+        for elem in input_file:
+            song_name = elem["master_metadata_track_name"]
+            time_played = elem["ms_played"] / self.ms_TO_hrs
+            
+            if song_name in self.data_dict.keys():
+                self.data_dict[song_name]['time_played'] += time_played
+                self.data_dict[song_name]['plays'] += 1
+            else:
+                self.data_dict[song_name] = {'time_played': time_played, 'plays': 1}
+
+    def print_info(self):
+        self.print_streaming_history(self.data_dict)
