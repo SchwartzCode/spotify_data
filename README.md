@@ -1,6 +1,6 @@
 # Mucking about with my spotify data
 
-![image](https://user-images.githubusercontent.com/496532/164379803-5b0bc9f9-b1dc-4e7f-a828-ffd0de96571a.png)
+![output_full_data](https://user-images.githubusercontent.com/496532/164879502-6e2c7ed2-dd96-46d5-ab9d-35cea890e5a9.png)
 
 ## Setup
 To install dependencies, run `pip install -r requirements.txt`
